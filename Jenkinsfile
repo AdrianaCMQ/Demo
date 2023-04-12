@@ -12,8 +12,10 @@ pipeline {
 
     stage('Test') {
       steps {
-        sh 'ls -al'
-        sh 'docker-compose up test'
+        script {
+                  def dockerCompose = tool 'docker-compose'
+                  dockerCompose "${dockerCompose}/docker-compose up -d"
+                }
       }
     }
 
