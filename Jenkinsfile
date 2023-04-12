@@ -13,7 +13,7 @@ pipeline {
     stage('Test') {
       steps {
         sh 'ls -al'
-        sh '${dockerCompose}/docker-compose up test'
+        sh '${DOCKER_COMPOSE_PATH}/docker-compose up test'
       }
     }
 
