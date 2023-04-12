@@ -3,29 +3,21 @@ pipeline {
   
   stages {
 
-    stage('Debug') {
-      steps {
-        sh 'echo "PATH: $PATH"'
-        sh 'echo "DOCKER_COMPOSE_PATH: $DOCKER_COMPOSE_PATH"'
-      }
-    }
-
     stage('Test') {
       steps {
-        sh 'ls -al'
         sh '${DOCKER_COMPOSE_PATH}/docker-compose up test'
       }
     }
 
     stage('Build') {
       steps {
-        sh 'docker-compose up build'
+        sh '${DOCKER_COMPOSE_PATH}/docker-compose up build'
       }
     }
 
     stage('GenImage') {
       steps {
-        sh 'docker-compose build image'
+        sh '${DOCKER_COMPOSE_PATH}/docker-compose build image'
       }
     }
 
