@@ -1,9 +1,5 @@
 pipeline {
   agent any
-
-  environment {
-      DOCKER_COMPOSE_PATH = tool name: 'docker-compose', type: 'com.cloudbees.jenkins.plugins.docker_tools.DockerTool'
-  }
   
   stages {
 
