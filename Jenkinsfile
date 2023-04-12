@@ -6,13 +6,13 @@ pipeline {
     stage('Test') {
       steps {
         sh 'ls -al'
-        sh 'docker compose up test'
+        sh 'docker-compose up test'
       }
     }
 
     stage('Build') {
       steps {
-        sh 'docker compose up build'
+        sh 'docker-compose up build'
       }
     }
 
