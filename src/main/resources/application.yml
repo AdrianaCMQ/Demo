@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-description: <<Flyway Baseline>>
+    schemas: quiz-final
+    user: root
+    password: p@ssword
+  datasource:
+    url: jdbc:mysql://localhost:3335/quiz-final?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_bin&useServerPrepStmts=false&rewriteBatchedStatements=true&createDatabaseIfNotExist=true
+    username: root
+    password: p@ssword
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop

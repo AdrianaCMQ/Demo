@@ -1,0 +1,72 @@
+version: '3.3'
+
+services:
+
+  test_db:
+    image: kobe19881208/gtb-mysql:8.0.29
+    container_name: mysql_quiz_final_test
+    environment:
+      MYSQL_DATABASE: 'quiz-final-test'
+      MYSQL_ROOT_PASSWORD: 'p@ssword'
+    healthcheck:
+      test: [ "CMD", "mysql", "-u", "root", "-pp@ssword" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - '3336:3306'
+    volumes:
+      - ./test_data:/var/lib/mysql
+
+  test:
+    image: gradle:7.0.2-jdk11-hotspot
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      test_db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://test_db:3306/quiz-final-test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_bin&useServerPrepStmts=false&rewriteBatchedStatements=true&createDatabaseIfNotExist=true
+    entrypoint:
+      gradle clean test --no-daemon
+
+  db:
+    image: kobe19881208/gtb-mysql:8.0.29
+    container_name: mysql_quiz_final
+    environment:
+      MYSQL_DATABASE: 'quiz-final'
+      MYSQL_ROOT_PASSWORD: 'p@ssword'
+    healthcheck:
+      test: [ "CMD", "mysql", "-u", "root", "-pp@ssword" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - '3335:3306'
+    volumes:
+      - ./data:/var/lib/mysql
+
+  build:
+    image: gradle:7.0.2-jdk11-hotspot
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint:
+      gradle build --exclude-task test --no-daemon
+
+  image:
+    image: quiz-final
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  backend:
+    image: quiz-final
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/quiz-final?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_bin&useServerPrepStmts=false&rewriteBatchedStatements=true&createDatabaseIfNotExist=true
+    ports:
+      - "8080:8080"

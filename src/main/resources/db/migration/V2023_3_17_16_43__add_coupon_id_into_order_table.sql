@@ -1,0 +1,2 @@
+ALTER TABLE `orders`
+    ADD coupon_id BIGINT NOT NULL DEFAULT 0;
