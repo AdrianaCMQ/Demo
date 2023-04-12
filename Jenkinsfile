@@ -3,6 +3,13 @@ pipeline {
   
   stages {
 
+    stage('Debug') {
+      steps {
+        sh 'echo "PATH: $PATH"'
+        sh 'echo "DOCKER_COMPOSE_PATH: $DOCKER_COMPOSE_PATH"'
+      }
+    }
+
     stage('Test') {
       steps {
         sh 'ls -al'
