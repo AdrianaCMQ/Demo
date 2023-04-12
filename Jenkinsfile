@@ -18,7 +18,7 @@ pipeline {
 
     stage('GenImage') {
       steps {
-        sh 'docker build . -t quiz final'
+        sh 'docker-compose build image'
       }
     }
 
