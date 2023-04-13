@@ -24,6 +24,7 @@ public class OrderRepositoryProviderTest {
     public static final String TEST_ADDRESS = "test address";
     public static final String MOBILE = "12345678987";
     public static final int QUANTITY = 10;
+    public static final BigDecimal PRICE = BigDecimal.TEN;
     @Autowired
     private OrderRepositoryProvider orderRepositoryProvider;
 
@@ -40,7 +41,7 @@ public class OrderRepositoryProviderTest {
         order.setAddressee(TEST_ADDRESSEE);
         order.setAddress(TEST_ADDRESS);
         order.setMobile(MOBILE);
-        order.setTotalPrice(BigDecimal.TEN);
+        order.setTotalPrice(PRICE);
         order.setCouponId(1L);
         order.setCreatedAt(Instant.now());
         order.setItems(List.of(orderItem));
