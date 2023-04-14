@@ -6,6 +6,7 @@ import com.tw.oquizfinal.adapters.dto.request.OrderRequest;
 import com.tw.oquizfinal.applications.OrderService;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
+import com.tw.oquizfinal.support.exceptions.ApiError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -81,5 +87,25 @@ public class OrderControllerTest {
                         .content(new ObjectMapper().writeValueAsString(orderRequest))
                 )
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenRequestHaveEmptyField() throws Exception {
+        OrderRequest orderRequest = new OrderRequest("addressee", "address", "15771534215", 1L, Collections.emptyList());
+        String message = "orderItems cannot be empty";
+
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders
+                        .post("/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(orderRequest))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+
+        ApiError apiError = new ObjectMapper().readValue(response.getContentAsString(), ApiError.class);
+        List<String> responseMessage = Stream.of(apiError.getMessage().split(";")).collect(Collectors.toList());
+
+        assertTrue(responseMessage.contains(message));
     }
 }
