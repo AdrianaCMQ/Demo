@@ -1,5 +1,6 @@
 package com.tw.oquizfinal.applications.coupon;
 
+import com.tw.oquizfinal.applications.exceptions.ProductNotExistException;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
@@ -48,7 +49,9 @@ public class DiscountCalculator {
     @NotNull
     private BigDecimal getTotalSum(List<OrderItem> orderItems) {
         return orderItems.stream().map(orderItem -> {
-            Product product = client.getProductDetail(orderItem.getProductId()).get();
+            Product product = client.getProductDetail(orderItem.getProductId())
+                    .orElseThrow(() -> new ProductNotExistException(orderItem.getProductId()));
+
             return product.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
         }).reduce(BigDecimal.ZERO, BigDecimal::add);
     }

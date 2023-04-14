@@ -4,11 +4,13 @@ import com.tw.oquizfinal.applications.coupon.DiscountCalculator;
 import com.tw.oquizfinal.applications.coupon.FullSubtractDiscount;
 import com.tw.oquizfinal.applications.coupon.NoRestrictedDiscount;
 import com.tw.oquizfinal.applications.coupon.ThreeItemsDiscount;
+import com.tw.oquizfinal.applications.exceptions.ProductNotExistException;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -22,7 +24,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -97,5 +101,14 @@ public class DiscountCalculatorTest {
         }
 
         assertEquals(expectedTotalPrice, totalPrice);
+    }
+
+    @Test
+    public void should_throw_exception_when_product_does_not_exist() {
+        when(client.getProductDetail(1L)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(ProductNotExistException.class,
+                () -> discountCalculator.getTotalPrice(order, List.of(orderItem)));
+        assertThat(exception.getMessage()).isEqualTo("Product doesn't exist: 1");
     }
 }
