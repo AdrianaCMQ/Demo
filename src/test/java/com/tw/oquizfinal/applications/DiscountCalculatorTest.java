@@ -9,8 +9,9 @@ import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -70,53 +71,31 @@ public class DiscountCalculatorTest {
         product.setCategory(TEST_CATEGORY);
     }
 
-    @Test
-    void should_return_total_price_with_no_discount() {
-        order.setCouponId(0L);
-        when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
-
-        BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
-        BigDecimal expectedTotalPrice = BigDecimal.valueOf(5000);
-
-        assertEquals(totalPrice, expectedTotalPrice);
-    }
-
-    @Test
-    void should_return_total_price_with_full_subtract_discount() {
-        order.setCouponId(1L);
+    @ParameterizedTest
+    @ValueSource(longs = {0L, 1L, 2L, 3L})
+    void should_return_total_price_with_or_without_discount(long couponId) {
+        order.setCouponId(couponId);
         when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
         when(fullSubtractDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
                 .thenReturn(BigDecimal.valueOf(250));
-
-        BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
-        BigDecimal expectedTotalPrice = BigDecimal.valueOf(4750);
-
-        assertEquals(totalPrice, expectedTotalPrice);
-    }
-
-    @Test
-    void should_return_total_price_with_three_items_discount() {
-        order.setCouponId(2L);
-        when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
         when(threeItemsDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
                 .thenReturn(BigDecimal.valueOf(1000.00));
-
-        BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
-        BigDecimal expectedTotalPrice = BigDecimal.valueOf(4000.00);
-
-        assertEquals(totalPrice, expectedTotalPrice);
-    }
-
-    @Test
-    void should_return_total_price_with_no_restricted_discount() {
-        order.setCouponId(3L);
-        when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
         when(noRestrictedDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
                 .thenReturn(BigDecimal.valueOf(20));
 
         BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
-        BigDecimal expectedTotalPrice = BigDecimal.valueOf(4980);
+        BigDecimal expectedTotalPrice = BigDecimal.ZERO;
 
-        assertEquals(totalPrice, expectedTotalPrice);
+        if (couponId == 0L) {
+            expectedTotalPrice = expectedTotalPrice.add(BigDecimal.valueOf(5000));
+        } else if (couponId == 1L) {
+            expectedTotalPrice = expectedTotalPrice.add(BigDecimal.valueOf(4750));
+        } else if (couponId == 2L) {
+            expectedTotalPrice = expectedTotalPrice.add(BigDecimal.valueOf(4000.00));
+        } else if (couponId == 3L) {
+            expectedTotalPrice = expectedTotalPrice.add(BigDecimal.valueOf(4980));
+        }
+
+        assertEquals(expectedTotalPrice, totalPrice);
     }
 }
