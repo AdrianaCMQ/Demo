@@ -17,6 +17,7 @@ public interface OrderDtoMapper {
     OrderDtoMapper MAPPER = Mappers.getMapper(OrderDtoMapper.class);
 
     @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "items", source = "orderRequest.items")
     Order toModel(OrderRequest orderRequest, Instant createdAt);
 
     @Mapping(target = "orderItems", source = "itemWithProductList")

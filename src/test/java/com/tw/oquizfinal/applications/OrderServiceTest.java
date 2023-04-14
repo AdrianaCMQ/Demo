@@ -59,7 +59,7 @@ public class OrderServiceTest {
         when(discountCalculator.getTotalPrice(order, List.of(orderItem))).thenReturn(PRICE);
         when(orderRepository.save(order)).thenReturn(order);
 
-        Order savedOrder = orderService.save(order, List.of(orderItem));
+        Order savedOrder = orderService.save(order);
 
         assertEquals(order.getOrderId(),savedOrder.getOrderId());
         assertEquals(order.getAddressee(),savedOrder.getAddressee());
