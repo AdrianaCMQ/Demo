@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class DiscountCalculatorTest {
     public static final String TEST_PRODUCT = "test product";
-    public static final BigDecimal PRODUCT_PRICE = BigDecimal.TEN;
+    public static final BigDecimal PRODUCT_PRICE = BigDecimal.valueOf(500);
     public static final String TEST_CATEGORY = "test category";
 
     @InjectMocks
