@@ -22,7 +22,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -114,6 +116,38 @@ public class OrderControllerTest {
         ApiError apiError = new ObjectMapper().readValue(response.getContentAsString(), ApiError.class);
         List<String> responseMessage = Stream.of(apiError.getMessage().split(";")).collect(Collectors.toList());
 
-        assertTrue(responseMessage.contains(message));
+        assertTrue(responseMessage.contains(errors));
+    }
+
+    @Test
+    void parameterisedShouldReturnBadRequestWhenRequestHaveBlankField() throws Exception {
+        Map<String, List<String>> args = new HashMap<>();
+        List<String> errorStringList = List.of("addressee cannot be blank", "address cannot be blank", "mobile cannot be blank");
+        args.put(null, errorStringList);
+        args.put("", errorStringList);
+        args.put("  ", errorStringList);
+
+        for (Map.Entry<String, List<String>> entity : args.entrySet()) {
+            shouldReturnBadRequestWhenRequestHaveBlankField(entity.getKey(), entity.getValue());
+        }
+    }
+
+    void shouldReturnBadRequestWhenRequestHaveBlankField(String blankField, List<String> errors) throws Exception {
+        OrderItem orderItem = new OrderItem(1L, 1L, 10);
+        OrderRequest orderRequest = new OrderRequest(blankField, blankField, blankField, 1L, List.of(orderItem));
+
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders
+                        .post("/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(orderRequest))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+
+        ApiError apiError = new ObjectMapper().readValue(response.getContentAsString(), ApiError.class);
+        List<String> responseMessage = Stream.of(apiError.getMessage().split(";")).collect(Collectors.toList());
+
+        errors.forEach(message -> assertTrue(responseMessage.contains(message)));
     }
 }
