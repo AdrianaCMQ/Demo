@@ -90,9 +90,17 @@ public class OrderControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequestWhenRequestHaveEmptyField() throws Exception {
-        OrderRequest orderRequest = new OrderRequest("addressee", "address", "15771534215", 1L, Collections.emptyList());
-        String message = "orderItems cannot be empty";
+    void parameterisedShouldReturnBadRequestWhenRequestHaveEmptyField() throws Exception {
+        Map<List<OrderItem>, String> args = new HashMap<>();
+        args.put(Collections.emptyList(), "orderItems cannot be empty");
+        args.put(null, "orderItems cannot be empty");
+        for (Map.Entry<List<OrderItem>, String> entity : args.entrySet()) {
+            shouldReturnBadRequestWhenRequestHaveEmptyField(entity.getKey(), entity.getValue());
+        }
+    }
+
+    void shouldReturnBadRequestWhenRequestHaveEmptyField(List<OrderItem> orderItems, String errors) throws Exception {
+        OrderRequest orderRequest = new OrderRequest("addressee", "address", "15771534215", 1L, orderItems);
 
         MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders
                         .post("/orders")
