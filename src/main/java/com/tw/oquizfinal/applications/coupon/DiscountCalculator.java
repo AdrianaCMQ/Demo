@@ -17,6 +17,8 @@ public class DiscountCalculator {
 
     public static final BigDecimal PRICE_BAR = BigDecimal.valueOf(1000);
     public static final BigDecimal DISCOUNT_AMOUNT = BigDecimal.valueOf(50);
+    public static final int QUALIFY_QUANTITY = 3;
+    public static final BigDecimal DISCOUNT_RATE = BigDecimal.valueOf(0.2);
     private final ProductServiceClient client;
 
     public BigDecimal getTotalPrice(Order order, List<OrderItem> orderItems) {
@@ -31,6 +33,19 @@ public class DiscountCalculator {
             if (totalSum.compareTo(PRICE_BAR) >= 0) {
                 discount = totalSum.divide(PRICE_BAR, 0, RoundingMode.DOWN).multiply(DISCOUNT_AMOUNT);
             }
+            return totalSum.subtract(discount);
+        }
+
+        if (order.getCouponId() == 2) {
+            BigDecimal discount = orderItems.stream()
+                    .filter(orderItem -> orderItem.getQuantity() >= QUALIFY_QUANTITY)
+                    .map(orderItem ->
+                            client.getProductDetail(orderItem.getProductId())
+                                    .get()
+                                    .getPrice()
+                                    .multiply(BigDecimal.valueOf(orderItem.getQuantity()))
+                                    .multiply(DISCOUNT_RATE)
+                    ).reduce(BigDecimal.ZERO, BigDecimal::add);
             return totalSum.subtract(discount);
         }
         return totalSum;

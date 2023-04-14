@@ -81,4 +81,15 @@ public class DiscountCalculatorTest {
 
         assertEquals(totalPrice, expectedTotalPrice);
     }
+
+    @Test
+    void should_return_total_price_with_three_items_discount() {
+        order.setCouponId(2L);
+        when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
+
+        BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
+        BigDecimal expectedTotalPrice = BigDecimal.valueOf(4000.00);
+
+        assertEquals(totalPrice, expectedTotalPrice);
+    }
 }
