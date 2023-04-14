@@ -1,5 +1,6 @@
 package com.tw.oquizfinal.applications;
 
+import com.tw.oquizfinal.applications.coupon.DiscountCalculator;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.order.OrderRepository;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
@@ -26,6 +27,8 @@ public class OrderServiceTest {
     private OrderRepository orderRepository;
     @InjectMocks
     private OrderService orderService;
+    @Mock
+    private DiscountCalculator discountCalculator;
 
     public static final String TEST_ADDRESSEE = "test addressee";
     public static final String TEST_ADDRESS = "test address";
@@ -53,9 +56,10 @@ public class OrderServiceTest {
 
     @Test
     void should_return_order_when_save_it() {
+        when(discountCalculator.getTotalPrice(order, List.of(orderItem))).thenReturn(PRICE);
         when(orderRepository.save(order)).thenReturn(order);
 
-        Order savedOrder = orderService.save(order);
+        Order savedOrder = orderService.save(order, List.of(orderItem));
 
         assertEquals(order.getOrderId(),savedOrder.getOrderId());
         assertEquals(order.getAddressee(),savedOrder.getAddressee());
