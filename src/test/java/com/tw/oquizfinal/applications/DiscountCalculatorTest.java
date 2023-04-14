@@ -1,6 +1,9 @@
 package com.tw.oquizfinal.applications;
 
 import com.tw.oquizfinal.applications.coupon.DiscountCalculator;
+import com.tw.oquizfinal.applications.coupon.FullSubtractDiscount;
+import com.tw.oquizfinal.applications.coupon.NoRestrictedDiscount;
+import com.tw.oquizfinal.applications.coupon.ThreeItemsDiscount;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
@@ -32,6 +35,13 @@ public class DiscountCalculatorTest {
     private DiscountCalculator discountCalculator;
     @Mock
     private ProductServiceClient client;
+    @Mock
+    private FullSubtractDiscount fullSubtractDiscount;
+    @Mock
+    private ThreeItemsDiscount threeItemsDiscount;
+    @Mock
+    private NoRestrictedDiscount noRestrictedDiscount;
+
 
     public static final String TEST_ADDRESSEE = "test addressee";
     public static final String TEST_ADDRESS = "test address";
@@ -75,6 +85,8 @@ public class DiscountCalculatorTest {
     void should_return_total_price_with_full_subtract_discount() {
         order.setCouponId(1L);
         when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
+        when(fullSubtractDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
+                .thenReturn(BigDecimal.valueOf(250));
 
         BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
         BigDecimal expectedTotalPrice = BigDecimal.valueOf(4750);
@@ -86,6 +98,8 @@ public class DiscountCalculatorTest {
     void should_return_total_price_with_three_items_discount() {
         order.setCouponId(2L);
         when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
+        when(threeItemsDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
+                .thenReturn(BigDecimal.valueOf(1000.00));
 
         BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
         BigDecimal expectedTotalPrice = BigDecimal.valueOf(4000.00);
@@ -97,6 +111,8 @@ public class DiscountCalculatorTest {
     void should_return_total_price_with_no_restricted_discount() {
         order.setCouponId(3L);
         when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
+        when(noRestrictedDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
+                .thenReturn(BigDecimal.valueOf(20));
 
         BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
         BigDecimal expectedTotalPrice = BigDecimal.valueOf(4980);

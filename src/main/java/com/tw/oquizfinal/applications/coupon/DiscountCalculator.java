@@ -5,57 +5,51 @@ import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 @Component
 @AllArgsConstructor
 public class DiscountCalculator {
 
-    public static final BigDecimal PRICE_BAR = BigDecimal.valueOf(1000);
-    public static final BigDecimal DISCOUNT_AMOUNT = BigDecimal.valueOf(50);
-    public static final int QUALIFY_QUANTITY = 3;
-    public static final BigDecimal DISCOUNT_RATE = BigDecimal.valueOf(0.2);
-    public static final BigDecimal NO_RESTRICT_DISCOUNT = BigDecimal.valueOf(20);
+    public static final String FULL_SUBTRACT = "1";
+    public static final String THREE_ITEMS = "2";
+    public static final String NO_RESTRICTED = "3";
     private final ProductServiceClient client;
+    private final FullSubtractDiscount fullSubtractDiscount;
+
+    private final ThreeItemsDiscount threeItemsDiscount;
+
+    private final NoRestrictedDiscount noRestrictedDiscount;
 
     public BigDecimal getTotalPrice(Order order, List<OrderItem> orderItems) {
 
-        BigDecimal totalSum = orderItems.stream().map(orderItem -> {
+        BigDecimal totalSum = getTotalSum(orderItems);
+        String couponId = String.valueOf(order.getCouponId());
+
+        switch (couponId) {
+            case FULL_SUBTRACT:
+                return totalSum.subtract(fullSubtractDiscount.calculateDiscount(order, totalSum, orderItems));
+
+            case THREE_ITEMS:
+                return totalSum.subtract(threeItemsDiscount.calculateDiscount(order, totalSum, orderItems));
+
+            case NO_RESTRICTED:
+                return totalSum.subtract(noRestrictedDiscount.calculateDiscount(order, totalSum, orderItems));
+
+            default:
+                return totalSum;
+        }
+    }
+
+    @NotNull
+    private BigDecimal getTotalSum(List<OrderItem> orderItems) {
+        return orderItems.stream().map(orderItem -> {
             Product product = client.getProductDetail(orderItem.getProductId()).get();
             return product.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
         }).reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        if (order.getCouponId() == 1) {
-            BigDecimal discount = BigDecimal.ZERO;
-            if (totalSum.compareTo(PRICE_BAR) >= 0) {
-                discount = totalSum.divide(PRICE_BAR, 0, RoundingMode.DOWN).multiply(DISCOUNT_AMOUNT);
-            }
-            return totalSum.subtract(discount);
-        }
-
-        if (order.getCouponId() == 2) {
-            BigDecimal discount = orderItems.stream()
-                    .filter(orderItem -> orderItem.getQuantity() >= QUALIFY_QUANTITY)
-                    .map(orderItem ->
-                            client.getProductDetail(orderItem.getProductId())
-                                    .get()
-                                    .getPrice()
-                                    .multiply(BigDecimal.valueOf(orderItem.getQuantity()))
-                                    .multiply(DISCOUNT_RATE)
-                    ).reduce(BigDecimal.ZERO, BigDecimal::add);
-            return totalSum.subtract(discount);
-        }
-
-
-        if (order.getCouponId() == 3) {
-
-            return totalSum.subtract(NO_RESTRICT_DISCOUNT);
-        }
-
-        return totalSum;
     }
 }
