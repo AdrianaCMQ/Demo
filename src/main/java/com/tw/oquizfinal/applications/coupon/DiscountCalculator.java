@@ -8,18 +8,31 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Component
 @AllArgsConstructor
 public class DiscountCalculator {
 
+    public static final BigDecimal PRICE_BAR = BigDecimal.valueOf(1000);
+    public static final BigDecimal DISCOUNT_AMOUNT = BigDecimal.valueOf(50);
     private final ProductServiceClient client;
 
     public BigDecimal getTotalPrice(Order order, List<OrderItem> orderItems) {
-        return orderItems.stream().map(orderItem -> {
+
+        BigDecimal totalSum = orderItems.stream().map(orderItem -> {
             Product product = client.getProductDetail(orderItem.getProductId()).get();
             return product.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
         }).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (order.getCouponId() == 1) {
+            BigDecimal discount = BigDecimal.ZERO;
+            if (totalSum.compareTo(PRICE_BAR) >= 0) {
+                discount = totalSum.divide(PRICE_BAR, 0, RoundingMode.DOWN).multiply(DISCOUNT_AMOUNT);
+            }
+            return totalSum.subtract(discount);
+        }
+        return totalSum;
     }
 }

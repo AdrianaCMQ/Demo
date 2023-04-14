@@ -52,7 +52,6 @@ public class DiscountCalculatorTest {
         order.setAddressee(TEST_ADDRESSEE);
         order.setAddress(TEST_ADDRESS);
         order.setMobile(MOBILE);
-        order.setCouponId(1L);
         order.setItems(List.of(orderItem));
 
         product.setId(1L);
@@ -63,10 +62,22 @@ public class DiscountCalculatorTest {
 
     @Test
     void should_return_total_price_with_no_discount() {
+        order.setCouponId(0L);
         when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
 
         BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
         BigDecimal expectedTotalPrice = BigDecimal.valueOf(5000);
+
+        assertEquals(totalPrice, expectedTotalPrice);
+    }
+
+    @Test
+    void should_return_total_price_with_full_subtract_discount() {
+        order.setCouponId(1L);
+        when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
+
+        BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
+        BigDecimal expectedTotalPrice = BigDecimal.valueOf(4750);
 
         assertEquals(totalPrice, expectedTotalPrice);
     }
