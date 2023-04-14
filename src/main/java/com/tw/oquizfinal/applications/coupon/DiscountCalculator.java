@@ -19,6 +19,7 @@ public class DiscountCalculator {
     public static final BigDecimal DISCOUNT_AMOUNT = BigDecimal.valueOf(50);
     public static final int QUALIFY_QUANTITY = 3;
     public static final BigDecimal DISCOUNT_RATE = BigDecimal.valueOf(0.2);
+    public static final BigDecimal NO_RESTRICT_DISCOUNT = BigDecimal.valueOf(20);
     private final ProductServiceClient client;
 
     public BigDecimal getTotalPrice(Order order, List<OrderItem> orderItems) {
@@ -48,6 +49,13 @@ public class DiscountCalculator {
                     ).reduce(BigDecimal.ZERO, BigDecimal::add);
             return totalSum.subtract(discount);
         }
+
+
+        if (order.getCouponId() == 3) {
+
+            return totalSum.subtract(NO_RESTRICT_DISCOUNT);
+        }
+
         return totalSum;
     }
 }
