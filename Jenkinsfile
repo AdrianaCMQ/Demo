@@ -6,7 +6,14 @@ pipeline {
     stage('Stop Containers') {
       steps {
         withEnv(['PATH+DOCKER=/opt/homebrew/bin']) {
-        sh 'docker stop $(docker ps -q)'
+        script {
+                  def runningContainers = sh(script: 'docker ps -q', returnStdout: true).trim()
+                  if (runningContainers) {
+                    sh 'docker stop $(docker ps -q)'
+                  } else {
+                    echo 'No running containers found'
+                  }
+                }
         }
       }
     }
