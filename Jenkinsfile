@@ -29,7 +29,7 @@ pipeline {
 
     stage('backend') {
       steps {
-        sh '${DOCKER_COMPOSE_PATH}/docker-compose up backend'
+        sh '${DOCKER_COMPOSE_PATH}/docker-compose up -d backend'
       }
     }
   }
