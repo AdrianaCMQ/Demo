@@ -7,6 +7,7 @@ pipeline {
       steps {
         withEnv(['PATH+DOCKER=/opt/homebrew/bin']) {
         sh 'docker stop $(docker ps -q)'
+        sh 'docker rm $(docker ps -q)'
         }
       }
     }
