@@ -5,7 +5,9 @@ pipeline {
 
     stage('Stop Containers') {
       steps {
+        withEnv(['PATH+DOCKER=/opt/homebrew/bin']) {
         sh 'docker stop $(docker ps -q)'
+        }
       }
     }
 
