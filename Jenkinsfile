@@ -20,5 +20,11 @@ pipeline {
         sh '${DOCKER_COMPOSE_PATH}/docker-compose build image'
       }
     }
+
+    stage('backend') {
+      steps {
+        sh '${DOCKER_COMPOSE_PATH}/docker-compose up backend'
+      }
+    }
   }
 }
