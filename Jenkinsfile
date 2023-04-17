@@ -3,6 +3,12 @@ pipeline {
   
   stages {
 
+    stage('Stop Containers') {
+      steps {
+        sh 'docker stop $(docker ps -q)'
+      }
+    }
+
     stage('Test') {
       steps {
         sh '${DOCKER_COMPOSE_PATH}/docker-compose up test'
