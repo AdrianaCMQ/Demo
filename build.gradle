@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.tw'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = "16"
 
 configurations {
     compileOnly {
@@ -57,3 +57,4 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform()
 }
+targetCompatibility = JavaVersion.VERSION_16
