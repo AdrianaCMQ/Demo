@@ -10,6 +10,7 @@ import com.tw.oquizfinal.adapters.mapper.OrderDtoMapper;
 import com.tw.oquizfinal.applications.OrderService;
 import com.tw.oquizfinal.domain.order.Order;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/orders")
@@ -51,27 +53,27 @@ public class OrderController {
     {
         if (page == null || size == null) {
             List<Order> orders = orderService.getOrders();
-            List<OrderResponse> orderResponses = orders.stream().map(order -> {
-                List<OrderItemWithProduct> orderItemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
-                return OrderDtoMapper.MAPPER.toResponse(order, orderItemsWithProduct);
-            }).collect(Collectors.toList());
+            List<OrderResponse> orderResponses = getOrderResponses(orders.stream());
             OrderItemResponse orderItemResponse = OrderItemResponse.buildBy(orderResponses);
             PageResponse pageResponse = new PageResponse(1, 1, 1);
+
             return new TotalOrdersResponse(pageResponse, orderItemResponse);
         }
-
         PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
-
         Page<Order> orders = orderService.getOrdersByPage(pageRequest);
-
-        List<OrderResponse> orderResponses = orders.stream().map(order -> {
-            List<OrderItemWithProduct> orderItemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
-            return OrderDtoMapper.MAPPER.toResponse(order, orderItemsWithProduct);
-        }).collect(Collectors.toList());
-
+        List<OrderResponse> orderResponses = getOrderResponses(orders.stream());
         OrderItemResponse orderItemResponse = OrderItemResponse.buildBy(orderResponses, sortBy, orderBy);
         PageResponse pageResponse = OrderDtoMapper.MAPPER.toPageResponse(orders);
 
         return new TotalOrdersResponse(pageResponse, orderItemResponse);
+    }
+
+    @NotNull
+    private List<OrderResponse> getOrderResponses(Stream<Order> orders) {
+
+        return orders.map(order -> {
+            List<OrderItemWithProduct> orderItemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
+            return OrderDtoMapper.MAPPER.toResponse(order, orderItemsWithProduct);
+        }).collect(Collectors.toList());
     }
 }
