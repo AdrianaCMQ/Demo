@@ -1,7 +1,7 @@
 package com.tw.oquizfinal.domain.order;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ public interface OrderRepository {
 
     List<Order> findAll();
 
-    Page<Order> findAllByPage(PageRequest pageRequest);
+    Page<Order> findAllByPage(Pageable pageable);
 }

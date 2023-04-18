@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface OrderEntityMapper {
     Order toModel(OrderEntity entity);
 
     List<Order> toModel(List<OrderEntity> orderEntities);
+
+    List<Order> toModel(Page<OrderEntity> orderEntities);
 }
