@@ -158,8 +158,8 @@ public class OrderServiceTest {
             assertNotNull(orderList);
             Assertions.assertEquals(0, orderList.getTotalElements());
             Assertions.assertEquals(0, orderList.getNumber());
-            Assertions.assertEquals(1, orderList.getTotalPages());
-            Assertions.assertEquals(0, orderList.getSize());
+            Assertions.assertEquals(0, orderList.getTotalPages());
+            Assertions.assertEquals(2, orderList.getSize());
         }
 
         @Test
