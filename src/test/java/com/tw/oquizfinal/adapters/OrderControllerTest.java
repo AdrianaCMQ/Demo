@@ -7,6 +7,7 @@ import com.tw.oquizfinal.adapters.mapper.OrderDtoMapper;
 import com.tw.oquizfinal.applications.OrderService;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
+import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.support.exceptions.ApiError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -170,6 +172,12 @@ public class OrderControllerTest {
                         .totalPrice(PRICE.add(BigDecimal.TEN)).createdAt(Instant.now().plusSeconds(2)).items(List.of(orderItem)).build()
         );
 
+        int page = 2;
+        int size = 2;
+        String sortBy = "createdAt";
+        String orderBy = "desc";
+        PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
+
         @Test
         void should_get_empty_when_has_no_order_or_pagination() throws Exception {
 
@@ -195,12 +203,6 @@ public class OrderControllerTest {
 
         @Test
         void should_get_empty_with_pagination_when_no_orders() throws Exception {
-            int page = 1;
-            int size = 10;
-            String sortBy = "createdAt";
-            String orderBy = "desc";
-            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
-
             when(orderService.getOrdersByPage(any())).thenReturn(new PageImpl<>(Collections.emptyList(), pageRequest, 0));
 
             mockMvc.perform(MockMvcRequestBuilders
@@ -209,13 +211,35 @@ public class OrderControllerTest {
                     ).andExpect(status().isOk())
                     .andExpect(jsonPath("$.page").exists())
                     .andExpect(jsonPath("$.page.current").value(1))
-                    .andExpect(jsonPath("$.page.size").value(10))
+                    .andExpect(jsonPath("$.page.size").value(2))
                     .andExpect(jsonPath("$.page.total").value(0))
                     .andExpect(jsonPath("$.items").exists())
                     .andExpect(jsonPath("$.items.total").value(0))
                     .andExpect(jsonPath("$.items.sortBy").value("createdAt"))
                     .andExpect(jsonPath("$.items.orderBy").value("desc"))
                     .andExpect(jsonPath("$.items.data").isEmpty());
+        }
+
+        @Test
+        void should_get_two_pages_in_desc_when_has_three_data() throws Exception {
+            when(orderService.getOrdersByPage(any())).thenReturn(new PageImpl<>(orders, pageRequest, 3));
+            when(orderService.getOrderItemsWithProduct(List.of(orderItem))).thenReturn(List.of(orderItemWithProduct));
+
+            mockMvc.perform(MockMvcRequestBuilders
+                            .get("/orders?page=1&size=2&sortBy=createdAt&orderBy=desc")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    ).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.page").exists())
+                    .andExpect(jsonPath("$.page.current").value(2))
+                    .andExpect(jsonPath("$.page.size").value(2))
+                    .andExpect(jsonPath("$.page.total").value(3))
+                    .andExpect(jsonPath("$.items").exists())
+                    .andExpect(jsonPath("$.items.total").value(3))
+                    .andExpect(jsonPath("$.items.sortBy").value("createdAt"))
+                    .andExpect(jsonPath("$.items.orderBy").value("desc"))
+                    .andExpect(jsonPath("$.items.data").exists())
+                    .andExpect(jsonPath("$.items.data").isArray())
+                    .andExpect(jsonPath("$.items.data", hasSize(3)));
         }
     }
 }
