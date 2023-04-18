@@ -3,6 +3,7 @@ package com.tw.oquizfinal.adapters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tw.oquizfinal.adapters.dto.OrderItemWithProduct;
 import com.tw.oquizfinal.adapters.dto.request.OrderRequest;
+import com.tw.oquizfinal.adapters.mapper.OrderDtoMapper;
 import com.tw.oquizfinal.applications.OrderService;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
@@ -18,6 +19,8 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
@@ -176,7 +179,7 @@ public class OrderControllerTest {
                             .get("/orders")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                     ).andExpect(status().isOk())
-                    .andExpect(jsonPath("$.size()").value(0));
+                    .andExpect(jsonPath("$.size()").value(2));
         }
 
         @Test
@@ -187,7 +190,32 @@ public class OrderControllerTest {
                             .get("/orders")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                     ).andExpect(status().isOk())
-                    .andExpect(jsonPath("$.size()").value(3));
+                    .andExpect(jsonPath("$.size()").value(2));
+        }
+
+        @Test
+        void should_get_empty_with_pagination_when_no_orders() throws Exception {
+            int page = 1;
+            int size = 10;
+            String sortBy = "createdAt";
+            String orderBy = "desc";
+            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
+
+            when(orderService.getOrdersByPage(any())).thenReturn(new PageImpl<>(Collections.emptyList(), pageRequest, 0));
+
+            mockMvc.perform(MockMvcRequestBuilders
+                            .get("/orders?page=1&size=10")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    ).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.page").exists())
+                    .andExpect(jsonPath("$.page.current").value(1))
+                    .andExpect(jsonPath("$.page.size").value(10))
+                    .andExpect(jsonPath("$.page.total").value(0))
+                    .andExpect(jsonPath("$.items").exists())
+                    .andExpect(jsonPath("$.items.total").value(0))
+                    .andExpect(jsonPath("$.items.sortBy").value("createdAt"))
+                    .andExpect(jsonPath("$.items.orderBy").value("desc"))
+                    .andExpect(jsonPath("$.items.data").isEmpty());
         }
     }
 }
