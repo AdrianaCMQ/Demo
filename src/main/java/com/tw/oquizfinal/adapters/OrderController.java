@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +50,12 @@ public class OrderController {
                                                   @RequestParam(required = false, defaultValue = "createdAt") String sortBy)
     {
         if (page == null || size == null) {
-            OrderItemResponse orderItemResponse = OrderItemResponse.buildBy(Collections.emptyList());
+            List<Order> orders = orderService.getOrders();
+            List<OrderResponse> orderResponses = orders.stream().map(order -> {
+                List<OrderItemWithProduct> orderItemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
+                return OrderDtoMapper.MAPPER.toResponse(order, orderItemsWithProduct);
+            }).collect(Collectors.toList());
+            OrderItemResponse orderItemResponse = OrderItemResponse.buildBy(orderResponses);
             PageResponse pageResponse = new PageResponse(1, 1, 1);
             return new TotalOrdersResponse(pageResponse, orderItemResponse);
         }
