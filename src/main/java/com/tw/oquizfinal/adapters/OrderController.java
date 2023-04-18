@@ -47,8 +47,8 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     public TotalOrdersResponse getAllByPagination(@RequestParam(required = false) Integer page,
                                                   @RequestParam(required = false) Integer size,
-                                                  @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-                                                  @RequestParam(required = false, defaultValue = "desc") String orderBy)
+                                                  @RequestParam(required = false, defaultValue = "desc") String orderBy,
+                                                  @RequestParam(required = false, defaultValue = "createdAt") String sortBy)
     {
         if (page == null || size == null) {
             OrderItemResponse orderItemResponse = OrderItemResponse.buildBy(Collections.emptyList());
@@ -56,7 +56,7 @@ public class OrderController {
             return new TotalOrdersResponse(pageResponse, orderItemResponse);
         }
 
-        PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, sortBy, orderBy);
+        PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
 
         Page<Order> orders = orderService.getOrdersByPage(pageRequest);
 
