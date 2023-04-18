@@ -19,7 +19,7 @@ services:
       - ./test_data:/var/lib/mysql
 
   test:
-    image: gradle:7.0.2-jdk11-hotspot
+    image: gradle:7.0.2-jdk16-hotspot
     volumes:
       - .:/app
     working_dir: /app
@@ -48,7 +48,7 @@ services:
       - ./data:/var/lib/mysql
 
   build:
-    image: gradle:7.0.2-jdk11-hotspot
+    image: gradle:7.0.2-jdk16-hotspot
     volumes:
       - .:/app
     working_dir: /app
