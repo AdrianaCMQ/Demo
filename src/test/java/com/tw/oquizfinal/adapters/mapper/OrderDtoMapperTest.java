@@ -3,10 +3,13 @@ package com.tw.oquizfinal.adapters.mapper;
 import com.tw.oquizfinal.adapters.dto.OrderItemWithProduct;
 import com.tw.oquizfinal.adapters.dto.request.OrderRequest;
 import com.tw.oquizfinal.adapters.dto.responses.OrderResponse;
+import com.tw.oquizfinal.adapters.dto.responses.PageResponse;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -104,5 +107,19 @@ class OrderDtoMapperTest {
         PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.Direction.DESC, sortBy);
         PageRequest mapped = OrderDtoMapper.MAPPER.buildPageRequest(page, 2, orderBy, sortBy);
         assertEquals(pageRequest, mapped);
+    }
+
+    @Test
+    void should_map_page_to_page_response() {
+        int page = 2;
+        int size = 2;
+        String sortBy = "createdAt";
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.Direction.DESC, sortBy);
+        Page<Order> orders = new PageImpl<>(List.of(order), pageRequest, size);
+        PageResponse pageResponse = new PageResponse(2, 2, 2);
+        PageResponse mapped = OrderDtoMapper.MAPPER.toPageResponse(orders);
+        assertEquals(pageResponse.getCurrent(), mapped.getCurrent());
+        assertEquals(pageResponse.getSize(), mapped.getSize());
+        assertEquals(pageResponse.getTotal(), mapped.getTotal());
     }
 }
