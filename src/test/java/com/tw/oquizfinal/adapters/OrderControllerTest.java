@@ -25,10 +25,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -156,6 +158,15 @@ public class OrderControllerTest {
     @Nested
     class GetOrders {
 
+        List<Order> orders = asList(
+                Order.builder().orderId(1L).addressee(TEST_ADDRESSEE).address(TEST_ADDRESS).mobile(MOBILE)
+                        .totalPrice(PRICE).createdAt(Instant.now()).items(List.of(orderItem)).build(),
+                Order.builder().orderId(2L).addressee(TEST_ADDRESSEE).address(TEST_ADDRESS).mobile(MOBILE)
+                        .totalPrice(PRICE.add(BigDecimal.ONE)).createdAt(Instant.now().plusSeconds(1)).items(List.of(orderItem)).build(),
+                Order.builder().orderId(3L).addressee(TEST_ADDRESSEE).address(TEST_ADDRESS).mobile(MOBILE)
+                        .totalPrice(PRICE.add(BigDecimal.TEN)).createdAt(Instant.now().plusSeconds(2)).items(List.of(orderItem)).build()
+        );
+
         @Test
         void should_get_empty_when_has_no_order_or_pagination() throws Exception {
 
@@ -166,6 +177,17 @@ public class OrderControllerTest {
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                     ).andExpect(status().isOk())
                     .andExpect(jsonPath("$.size()").value(0));
+        }
+
+        @Test
+        void should_get_orders_with_no_pagination() throws Exception {
+            when(orderService.getOrders()).thenReturn(orders);
+
+            mockMvc.perform(MockMvcRequestBuilders
+                            .get("/orders")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    ).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.size()").value(3));
         }
     }
 }
