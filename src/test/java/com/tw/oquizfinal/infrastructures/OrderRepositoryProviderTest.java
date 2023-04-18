@@ -4,10 +4,12 @@ import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.infrastructures.order.OrderRepositoryProvider;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -15,6 +17,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -60,5 +63,23 @@ public class OrderRepositoryProviderTest {
         assertEquals(savedOrder.getCreatedAt(), order.getCreatedAt());
         assertEquals(savedOrder.getItems().get(0).getItemId(), order.getItems().get(0).getItemId());
         assertEquals(savedOrder.getItems().size(), order.getItems().size());
+    }
+
+    @Nested
+    class getOrders {
+
+        @Test
+        @Sql("classpath:scripts/insert_3_orders.sql")
+        @Sql("classpath:scripts/insert_5_items.sql")
+        @Sql("classpath:scripts/insert_5_orders_items.sql")
+        void should_get_all_orders() {
+            List<Order> orders = orderRepositoryProvider.findAll();
+
+            assertNotNull(orders);
+            assertEquals(orders.size(), 3);
+            assertEquals(orders.get(0).getOrderId(), 1L);
+            assertEquals(orders.get(1).getOrderId(), 2L);
+            assertEquals(orders.get(2).getOrderId(), 3L);
+        }
     }
 }

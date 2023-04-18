@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -27,7 +26,7 @@ public class OrderRepositoryProvider implements OrderRepository {
 
     @Override
     public List<Order> findAll() {
-        return Collections.emptyList();
+        return OrderEntityMapper.MAPPER.toModel(jpaOrderRepository.findAll());
     }
 
     @Override
