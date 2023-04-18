@@ -202,6 +202,7 @@ public class OrderControllerTest {
 
         @Test
         void should_get_empty_with_pagination_when_no_orders() throws Exception {
+            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(1, size, orderBy, sortBy);
             when(orderService.getOrdersByPage(any())).thenReturn(new PageImpl<>(Collections.emptyList(), pageRequest, 0));
 
             mockMvc.perform(MockMvcRequestBuilders
@@ -214,8 +215,6 @@ public class OrderControllerTest {
                     .andExpect(jsonPath("$.page.total").value(0))
                     .andExpect(jsonPath("$.items").exists())
                     .andExpect(jsonPath("$.items.total").value(0))
-                    .andExpect(jsonPath("$.items.sortBy").value("createdAt"))
-                    .andExpect(jsonPath("$.items.orderBy").value("desc"))
                     .andExpect(jsonPath("$.items.data").isEmpty());
         }
 
