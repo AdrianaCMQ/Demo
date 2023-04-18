@@ -134,5 +134,19 @@ public class OrderRepositoryProviderTest {
             Assertions.assertEquals(1, orders.getContent().get(0).getOrderId());
             Assertions.assertEquals(3, orders.getContent().get(2).getOrderId());
         }
+
+        @Test
+        @Sql("classpath:scripts/insert_3_orders.sql")
+        @Sql("classpath:scripts/insert_5_items.sql")
+        @Sql("classpath:scripts/insert_5_orders_items.sql")
+        void should_get_no_order_when_page_number_out_of_range() {
+            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(2, 10, "asc", "mobile");
+            Page<Order> orders = orderRepositoryProvider.findAllByPage(pageRequest);
+
+            assertNotNull(orders);
+            Assertions.assertEquals(orders.getContent().size(), 0);
+            Assertions.assertEquals(1, orders.getTotalPages());
+            Assertions.assertEquals(3, orders.getTotalElements());
+        }
     }
 }
