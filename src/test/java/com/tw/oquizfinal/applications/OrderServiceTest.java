@@ -151,11 +151,6 @@ public class OrderServiceTest {
 
         @Test
         void should_get_empty_page_when_has_no_order() {
-            int page = 1;
-            int size = 2;
-            String sortBy = "createdAt";
-            String orderBy = "desc";
-            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
             when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(Collections.emptyList(), pageRequest, 0));
 
             Page<Order> orderList = orderService.getOrdersByPage(pageRequest);
@@ -192,6 +187,19 @@ public class OrderServiceTest {
             Assertions.assertEquals(orderList.get(0).getOrderId(), orderList.get(0).getOrderId());
             Assertions.assertEquals(orderList.get(1).getOrderId(), orderList.get(1).getOrderId());
             Assertions.assertEquals(orderList.get(2).getOrderId(), orderList.get(2).getOrderId());
+        }
+
+        @Test
+        void should_return_orders_with_order_items_info() {
+            when(orderRepository.findAll()).thenReturn(orders);
+
+            List<Order> orderList = orderService.getOrders();
+
+            assertNotNull(orderList);
+            Assertions.assertEquals(orderList.size(), 3);
+            Assertions.assertEquals(orderList.get(0).getItems(), orderList.get(0).getItems());
+            Assertions.assertEquals(orderList.get(1).getItems(), orderList.get(1).getItems());
+            Assertions.assertEquals(orderList.get(2).getItems(), orderList.get(2).getItems());
         }
     }
 }
