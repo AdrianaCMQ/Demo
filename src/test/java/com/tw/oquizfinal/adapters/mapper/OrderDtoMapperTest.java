@@ -7,6 +7,8 @@ import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -91,5 +93,16 @@ class OrderDtoMapperTest {
         assertEquals(response.getTotalPrice(), orderResponse.getTotalPrice());
         assertEquals(response.getCouponId(), orderResponse.getCouponId());
         assertEquals(response.getOrderItems().size(), orderResponse.getOrderItems().size());
+    }
+
+    @Test
+    void should_build_page_request_by_request_parameter() {
+        int page = 2;
+        int size = 2;
+        String sortBy = "createdAt";
+        String orderBy = "desc";
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.Direction.DESC, sortBy);
+        PageRequest mapped = OrderDtoMapper.MAPPER.buildPageRequest(page, 2, orderBy, sortBy);
+        assertEquals(pageRequest, mapped);
     }
 }

@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,5 +24,12 @@ public interface OrderDtoMapper {
 
     @Mapping(target = "orderItems", source = "itemWithProductList")
     OrderResponse toResponse(Order order, List<OrderItemWithProduct> itemWithProductList);
+
+    default PageRequest buildPageRequest(Integer page, Integer size, String orderBy, String sortBy) {
+        Sort.Direction direction = "desc".equals(orderBy) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return PageRequest.of(page - 1, size, direction, sortBy);
+    }
+
+
 }
 
