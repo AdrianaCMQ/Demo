@@ -49,6 +49,6 @@ public class OrderService {
     }
 
     public Page<Order> getOrdersByPage(PageRequest pageRequest) {
-        return Page.empty();
+        return orderRepository.findAllByPage(pageRequest);
     }
 }

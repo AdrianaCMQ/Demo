@@ -23,10 +23,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -121,6 +123,22 @@ public class OrderServiceTest {
     @Nested
     class getOrders {
 
+        List<Order> orders = asList(
+                Order.builder().orderId(1L).addressee(TEST_ADDRESSEE).address(TEST_ADDRESS).mobile(MOBILE)
+                        .totalPrice(PRICE).createdAt(Instant.now()).items(List.of(orderItem)).build(),
+                Order.builder().orderId(2L).addressee(TEST_ADDRESSEE).address(TEST_ADDRESS).mobile(MOBILE)
+                        .totalPrice(PRICE.add(BigDecimal.ONE)).createdAt(Instant.now().plusSeconds(1)).items(List.of(orderItem)).build(),
+                Order.builder().orderId(3L).addressee(TEST_ADDRESSEE).address(TEST_ADDRESS).mobile(MOBILE)
+                        .totalPrice(PRICE.add(BigDecimal.TEN)).createdAt(Instant.now().plusSeconds(2)).items(List.of(orderItem)).build()
+        );
+
+        int page = 1;
+        int size = 2;
+        String sortBy = "createdAt";
+        String orderBy = "desc";
+        PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
+
+
         @Test
         void should_get_empty_list_when_has_no_order() {
             when(orderRepository.findAll()).thenReturn(Collections.emptyList());
@@ -149,5 +167,18 @@ public class OrderServiceTest {
             Assertions.assertEquals(0, orderList.getSize());
         }
 
+        @Test
+        void should_return_2_pages_when_has_three_data_and_page_size_is_2() {
+            when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(orders, pageRequest, 3));
+
+            Page<Order> orderPage = orderService.getOrdersByPage(pageRequest);
+
+            assertNotNull(orderPage);
+            Assertions.assertEquals(3, orderPage.getTotalElements());
+            Assertions.assertEquals(0, orderPage.getNumber());
+            Assertions.assertEquals(2, orderPage.getTotalPages());
+            Assertions.assertEquals(2, orderPage.getSize());
+            Assertions.assertEquals(3, orderPage.getContent().size());
+        }
     }
 }
