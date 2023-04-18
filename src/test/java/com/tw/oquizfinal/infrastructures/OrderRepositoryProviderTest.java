@@ -103,5 +103,21 @@ public class OrderRepositoryProviderTest {
             Assertions.assertEquals(2, orders.getTotalPages());
             Assertions.assertEquals(3, orders.getTotalElements());
         }
+
+        @Test
+        @Sql("classpath:scripts/insert_3_orders.sql")
+        @Sql("classpath:scripts/insert_5_items.sql")
+        @Sql("classpath:scripts/insert_5_orders_items.sql")
+        void should_find_all_orders_by_desc() {
+            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(1, 10, "desc", "mobile");
+
+            Page<Order> orders = orderRepositoryProvider.findAllByPage(pageRequest);
+
+            assertNotNull(orders);
+            Assertions.assertEquals(Sort.by(Sort.Direction.DESC, "mobile"), orders.getSort());
+            Assertions.assertEquals(3, orders.getTotalElements());
+            Assertions.assertEquals(3, orders.getContent().get(0).getOrderId());
+            Assertions.assertEquals(1, orders.getContent().get(2).getOrderId());
+        }
     }
 }
