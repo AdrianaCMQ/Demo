@@ -8,6 +8,7 @@ import com.tw.oquizfinal.applications.OrderService;
 import com.tw.oquizfinal.domain.order.Order;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
@@ -32,5 +34,19 @@ public class OrderController {
         List<OrderItemWithProduct> itemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
 
         return OrderDtoMapper.MAPPER.toResponse(order, itemsWithProduct);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<OrderResponse> getAllByPagination() {
+        List<Order> orders = orderService.getOrders();
+
+        return orders.stream()
+                .map(order ->
+        {
+            List<OrderItemWithProduct> orderItemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
+            return OrderDtoMapper.MAPPER.toResponse(order, orderItemsWithProduct);
+        })
+                .collect(Collectors.toList());
     }
 }

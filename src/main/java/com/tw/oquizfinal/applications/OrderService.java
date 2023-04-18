@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,5 +40,9 @@ public class OrderService {
                     product.getTitle(), product.getPrice(),
                     product.getCategory(), orderItem.getQuantity());
         }).collect(Collectors.toList());
+    }
+
+    public List<Order> getOrders() {
+        return Collections.emptyList();
     }
 }

@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -149,6 +150,22 @@ public class OrderControllerTest {
                     Arguments.of("", errorStringList),
                     Arguments.of("  ", errorStringList)
             );
+        }
+    }
+    
+    @Nested
+    class GetOrders {
+
+        @Test
+        void should_get_empty_when_has_no_order_or_pagination() throws Exception {
+
+            when(orderService.getOrders()).thenReturn(Collections.emptyList());
+
+            mockMvc.perform(MockMvcRequestBuilders
+                            .get("/orders")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    ).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.size()").value(0));
         }
     }
 }
