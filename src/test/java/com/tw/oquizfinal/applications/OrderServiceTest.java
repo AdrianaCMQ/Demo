@@ -180,5 +180,18 @@ public class OrderServiceTest {
             Assertions.assertEquals(2, orderPage.getSize());
             Assertions.assertEquals(3, orderPage.getContent().size());
         }
+
+        @Test
+        void should_return_3_orders_with_no_pagination() {
+            when(orderRepository.findAll()).thenReturn(orders);
+
+            List<Order> orderList = orderService.getOrders();
+
+            assertNotNull(orderList);
+            Assertions.assertEquals(orderList.size(), 3);
+            Assertions.assertEquals(orderList.get(0).getOrderId(), orderList.get(0).getOrderId());
+            Assertions.assertEquals(orderList.get(1).getOrderId(), orderList.get(1).getOrderId());
+            Assertions.assertEquals(orderList.get(2).getOrderId(), orderList.get(2).getOrderId());
+        }
     }
 }

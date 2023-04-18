@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +44,7 @@ public class OrderService {
     }
 
     public List<Order> getOrders() {
-        return Collections.emptyList();
+        return orderRepository.findAll();
     }
 
     public Page<Order> getOrdersByPage(PageRequest pageRequest) {
