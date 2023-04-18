@@ -7,7 +7,6 @@ import com.tw.oquizfinal.adapters.mapper.OrderDtoMapper;
 import com.tw.oquizfinal.applications.OrderService;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
-import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.support.exceptions.ApiError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
