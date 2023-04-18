@@ -1,12 +1,14 @@
 package com.tw.oquizfinal.applications;
 
 import com.tw.oquizfinal.adapters.dto.OrderItemWithProduct;
+import com.tw.oquizfinal.adapters.mapper.OrderDtoMapper;
 import com.tw.oquizfinal.applications.coupon.DiscountCalculator;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.order.OrderRepository;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -118,7 +123,6 @@ public class OrderServiceTest {
 
         @Test
         void should_get_empty_list_when_has_no_order() {
-
             when(orderRepository.findAll()).thenReturn(Collections.emptyList());
 
             List<Order> orders = orderService.getOrders();
@@ -126,5 +130,24 @@ public class OrderServiceTest {
             assertNotNull(orders);
             assertEquals(orders.size(), 0);
         }
+
+        @Test
+        void should_get_empty_page_when_has_no_order() {
+            int page = 1;
+            int size = 2;
+            String sortBy = "createdAt";
+            String orderBy = "desc";
+            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
+            when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(Collections.emptyList(), pageRequest, 0));
+
+            Page<Order> orderList = orderService.getOrdersByPage(pageRequest);
+
+            assertNotNull(orderList);
+            Assertions.assertEquals(0, orderList.getTotalElements());
+            Assertions.assertEquals(0, orderList.getNumber());
+            Assertions.assertEquals(1, orderList.getTotalPages());
+            Assertions.assertEquals(0, orderList.getSize());
+        }
+
     }
 }

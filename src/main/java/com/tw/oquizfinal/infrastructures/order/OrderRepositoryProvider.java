@@ -5,6 +5,8 @@ import com.tw.oquizfinal.domain.order.OrderRepository;
 import com.tw.oquizfinal.infrastructures.order.entity.OrderEntity;
 import com.tw.oquizfinal.infrastructures.order.mapper.OrderEntityMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -26,5 +28,10 @@ public class OrderRepositoryProvider implements OrderRepository {
     @Override
     public List<Order> findAll() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Page<Order> findAllByPage(PageRequest pageRequest) {
+        return Page.empty();
     }
 }
