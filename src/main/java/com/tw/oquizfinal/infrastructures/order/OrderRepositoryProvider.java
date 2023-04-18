@@ -7,6 +7,9 @@ import com.tw.oquizfinal.infrastructures.order.mapper.OrderEntityMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.List;
+
 @Component
 @AllArgsConstructor
 public class OrderRepositoryProvider implements OrderRepository {
@@ -18,5 +21,10 @@ public class OrderRepositoryProvider implements OrderRepository {
         OrderEntity entity = jpaOrderRepository.save(OrderEntityMapper.MAPPER.toEntity(order));
 
         return OrderEntityMapper.MAPPER.toModel(entity);
+    }
+
+    @Override
+    public List<Order> findAll() {
+        return Collections.emptyList();
     }
 }

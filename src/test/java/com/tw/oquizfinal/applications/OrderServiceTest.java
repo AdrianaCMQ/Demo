@@ -8,6 +8,7 @@ import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,10 +18,12 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,12 +89,12 @@ public class OrderServiceTest {
 
         Order savedOrder = orderService.save(order);
 
-        assertEquals(order.getOrderId(),savedOrder.getOrderId());
-        assertEquals(order.getAddressee(),savedOrder.getAddressee());
-        assertEquals(order.getAddress(),savedOrder.getAddress());
-        assertEquals(order.getMobile(),savedOrder.getMobile());
-        assertEquals(order.getTotalPrice(),savedOrder.getTotalPrice());
-        assertEquals(order.getCreatedAt(),savedOrder.getCreatedAt());
+        assertEquals(order.getOrderId(), savedOrder.getOrderId());
+        assertEquals(order.getAddressee(), savedOrder.getAddressee());
+        assertEquals(order.getAddress(), savedOrder.getAddress());
+        assertEquals(order.getMobile(), savedOrder.getMobile());
+        assertEquals(order.getTotalPrice(), savedOrder.getTotalPrice());
+        assertEquals(order.getCreatedAt(), savedOrder.getCreatedAt());
         assertEquals(List.of(orderItem), savedOrder.getItems());
     }
 
@@ -108,5 +111,20 @@ public class OrderServiceTest {
         assertEquals(product.getTitle(), orderItemsWithProduct.get(0).getTitle());
         assertEquals(product.getPrice(), orderItemsWithProduct.get(0).getPrice());
         assertEquals(product.getCategory(), orderItemsWithProduct.get(0).getCategory());
+    }
+
+    @Nested
+    class getOrders {
+
+        @Test
+        void should_get_empty_list_when_has_no_order() {
+
+            when(orderRepository.findAll()).thenReturn(Collections.emptyList());
+
+            List<Order> orders = orderService.getOrders();
+
+            assertNotNull(orders);
+            assertEquals(orders.size(), 0);
+        }
     }
 }
