@@ -7,6 +7,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OrderEntityMapper {
     OrderEntityMapper MAPPER = Mappers.getMapper(OrderEntityMapper.class);
@@ -15,4 +17,6 @@ public interface OrderEntityMapper {
     OrderEntity toEntity(Order order);
 
     Order toModel(OrderEntity entity);
+
+    List<Order> toModel(List<OrderEntity> orderEntities);
 }

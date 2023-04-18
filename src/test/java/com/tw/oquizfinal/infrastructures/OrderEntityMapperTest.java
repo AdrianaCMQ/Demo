@@ -6,6 +6,7 @@ import com.tw.oquizfinal.infrastructures.order.entity.OrderEntity;
 import com.tw.oquizfinal.infrastructures.order.mapper.OrderEntityMapper;
 import com.tw.oquizfinal.infrastructures.orderItem.entity.OrderItemEntity;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -78,5 +79,16 @@ class OrderEntityMapperTest {
         assertEquals(model.getCouponId(), order.getCouponId());
         assertEquals(model.getItems().get(0).getItemId(), order.getItems().get(0).getItemId());
         assertEquals(model.getItems().size(), order.getItems().size());
+    }
+
+    @Nested
+    class getOrders {
+        @Test
+        void should_return_model_from_order_entity_list() {
+            List<Order> models = OrderEntityMapper.MAPPER.toModel(List.of(orderEntity));
+
+            assertEquals(models.size(), 1);
+            assertEquals(models.get(0).getOrderId(), orderEntity.getOrderId());
+        }
     }
 }
