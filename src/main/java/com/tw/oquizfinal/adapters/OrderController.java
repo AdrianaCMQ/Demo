@@ -2,7 +2,7 @@ package com.tw.oquizfinal.adapters;
 
 import com.tw.oquizfinal.adapters.dto.OrderItemWithProduct;
 import com.tw.oquizfinal.adapters.dto.request.OrderRequest;
-import com.tw.oquizfinal.adapters.dto.responses.OrderItemResponse;
+import com.tw.oquizfinal.adapters.dto.responses.OrderTotalResponse;
 import com.tw.oquizfinal.adapters.dto.responses.OrderResponse;
 import com.tw.oquizfinal.adapters.dto.responses.PageResponse;
 import com.tw.oquizfinal.adapters.dto.responses.TotalOrdersResponse;
@@ -54,18 +54,18 @@ public class OrderController {
         if (page == null || size == null) {
             List<Order> orders = orderService.getOrders();
             List<OrderResponse> orderResponses = getOrderResponses(orders.stream());
-            OrderItemResponse orderItemResponse = OrderItemResponse.buildBy(orderResponses);
+            OrderTotalResponse orderTotalResponse = OrderTotalResponse.buildBy(orderResponses);
             PageResponse pageResponse = new PageResponse(1, 1, 1);
 
-            return new TotalOrdersResponse(pageResponse, orderItemResponse);
+            return new TotalOrdersResponse(pageResponse, orderTotalResponse);
         }
         PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
         Page<Order> orders = orderService.getOrdersByPage(pageRequest);
         List<OrderResponse> orderResponses = getOrderResponses(orders.stream());
-        OrderItemResponse orderItemResponse = OrderItemResponse.buildBy(orderResponses, sortBy, orderBy);
+        OrderTotalResponse orderTotalResponse = OrderTotalResponse.buildBy(orderResponses, sortBy, orderBy);
         PageResponse pageResponse = OrderDtoMapper.MAPPER.toPageResponse(orders);
 
-        return new TotalOrdersResponse(pageResponse, orderItemResponse);
+        return new TotalOrdersResponse(pageResponse, orderTotalResponse);
     }
 
     @NotNull

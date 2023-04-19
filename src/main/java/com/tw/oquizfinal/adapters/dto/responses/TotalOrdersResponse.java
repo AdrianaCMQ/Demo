@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TotalOrdersResponse {
     private PageResponse page;
-    private OrderItemResponse items;
+    private OrderTotalResponse items;
 
 }
