@@ -43,10 +43,12 @@ public class OrderService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional
     public List<Order> getOrders() {
         return orderRepository.findAll();
     }
 
+    @Transactional
     public Page<Order> getOrdersByPage(PageRequest pageRequest) {
         return orderRepository.findAllByPage(pageRequest);
     }
