@@ -91,7 +91,7 @@ public class OrderServiceTest {
 
     @Test
     void should_return_order_when_save_it() {
-        when(discountCalculator.getTotalPrice(order, List.of(orderItem))).thenReturn(PRICE);
+        when(discountCalculator.getTotalPrice(order)).thenReturn(PRICE);
         when(orderRepository.save(order)).thenReturn(order);
 
         Order savedOrder = orderService.save(order);

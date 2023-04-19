@@ -26,7 +26,7 @@ public class OrderService {
 
     @Transactional
     public Order save(Order order) {
-        order.setTotalPrice(discountCalculator.getTotalPrice(order, order.getItems()));
+        order.setTotalPrice(discountCalculator.getTotalPrice(order));
 
         return orderRepository.save(order);
     }

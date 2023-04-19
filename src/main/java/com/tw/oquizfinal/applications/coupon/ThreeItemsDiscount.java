@@ -1,5 +1,6 @@
 package com.tw.oquizfinal.applications.coupon;
 
+import com.tw.oquizfinal.applications.exceptions.ProductNotExistException;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
@@ -18,13 +19,13 @@ public class ThreeItemsDiscount implements DiscountStrategy{
     private final ProductServiceClient client;
 
     @Override
-    public BigDecimal calculateDiscount(Order order, BigDecimal totalSum, List<OrderItem> orderItems) {
-
+    public BigDecimal calculateDiscount(Order order, BigDecimal totalSum) {
+        List<OrderItem> orderItems = order.getItems();
         return orderItems.stream()
                 .filter(orderItem -> orderItem.getQuantity() >= QUANTITY)
                 .map(orderItem ->
                         client.getProductDetail(orderItem.getProductId())
-                                .get()
+                                .orElseThrow(() -> new ProductNotExistException(orderItem.getProductId()))
                                 .getPrice()
                                 .multiply(BigDecimal.valueOf(orderItem.getQuantity()))
                                 .multiply(DISCOUNT_RATE)

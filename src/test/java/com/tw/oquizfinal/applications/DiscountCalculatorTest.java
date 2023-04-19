@@ -80,14 +80,14 @@ public class DiscountCalculatorTest {
     void should_return_total_price_with_or_without_discount(long couponId) {
         order.setCouponId(couponId);
         when(client.getProductDetail(orderItem.getProductId())).thenReturn(Optional.of(product));
-        when(fullSubtractDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
+        when(fullSubtractDiscount.calculateDiscount(order, BigDecimal.valueOf(5000)))
                 .thenReturn(BigDecimal.valueOf(250));
-        when(threeItemsDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
+        when(threeItemsDiscount.calculateDiscount(order, BigDecimal.valueOf(5000)))
                 .thenReturn(BigDecimal.valueOf(1000.00));
-        when(noRestrictedDiscount.calculateDiscount(order, BigDecimal.valueOf(5000), List.of(orderItem)))
+        when(noRestrictedDiscount.calculateDiscount(order, BigDecimal.valueOf(5000)))
                 .thenReturn(BigDecimal.valueOf(20));
 
-        BigDecimal totalPrice = discountCalculator.getTotalPrice(order, List.of(orderItem));
+        BigDecimal totalPrice = discountCalculator.getTotalPrice(order);
         BigDecimal expectedTotalPrice = BigDecimal.ZERO;
 
         if (couponId == 0L) {
@@ -108,7 +108,7 @@ public class DiscountCalculatorTest {
         when(client.getProductDetail(1L)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ProductNotExistException.class,
-                () -> discountCalculator.getTotalPrice(order, List.of(orderItem)));
+                () -> discountCalculator.getTotalPrice(order));
         assertThat(exception.getMessage()).isEqualTo("Product doesn't exist: 1");
     }
 }

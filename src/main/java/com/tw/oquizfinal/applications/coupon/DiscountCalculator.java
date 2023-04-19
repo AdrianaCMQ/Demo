@@ -26,24 +26,19 @@ public class DiscountCalculator {
 
     private final NoRestrictedDiscount noRestrictedDiscount;
 
-    public BigDecimal getTotalPrice(Order order, List<OrderItem> orderItems) {
-
+    public BigDecimal getTotalPrice(Order order) {
+        List<OrderItem> orderItems = order.getItems();
         BigDecimal totalSum = getTotalSum(orderItems);
         String couponId = String.valueOf(order.getCouponId());
 
-        switch (couponId) {
-            case FULL_SUBTRACT:
-                return totalSum.subtract(fullSubtractDiscount.calculateDiscount(order, totalSum, orderItems));
-
-            case THREE_ITEMS:
-                return totalSum.subtract(threeItemsDiscount.calculateDiscount(order, totalSum, orderItems));
-
-            case NO_RESTRICTED:
-                return totalSum.subtract(noRestrictedDiscount.calculateDiscount(order, totalSum, orderItems));
-
-            default:
-                return totalSum;
-        }
+        return switch (couponId) {
+            case FULL_SUBTRACT ->
+                    totalSum.subtract(fullSubtractDiscount.calculateDiscount(order, totalSum));
+            case THREE_ITEMS -> totalSum.subtract(threeItemsDiscount.calculateDiscount(order, totalSum));
+            case NO_RESTRICTED ->
+                    totalSum.subtract(noRestrictedDiscount.calculateDiscount(order, totalSum));
+            default -> totalSum;
+        };
     }
 
     @NotNull
