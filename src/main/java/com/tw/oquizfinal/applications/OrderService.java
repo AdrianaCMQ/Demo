@@ -8,6 +8,7 @@ import com.tw.oquizfinal.domain.order.OrderRepository;
 import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,14 @@ public class OrderService {
     public Order save(Order order) {
         order.setTotalPrice(discountCalculator.getTotalPrice(order));
         Order save = orderRepository.save(order);
-        List<OrderItemWithProduct> orderItemWithProducts = save.getItems().stream().map(orderItem -> {
+        save.setOrderItemWithProducts(getProductInfo(save));
+
+        return save;
+    }
+
+    @NotNull
+    private List<OrderItemWithProduct> getProductInfo(Order save) {
+        return save.getItems().stream().map(orderItem -> {
             Product product = client.getProductDetail(orderItem.getProductId())
                     .orElseThrow(() -> new ProductNotExistException(orderItem.getProductId()));
 
@@ -36,9 +44,6 @@ public class OrderService {
                     product.getTitle(), product.getPrice(),
                     product.getCategory(), orderItem.getQuantity());
         }).collect(Collectors.toList());
-        save.setOrderItemWithProducts(orderItemWithProducts);
-
-        return save;
     }
 
     @Transactional
