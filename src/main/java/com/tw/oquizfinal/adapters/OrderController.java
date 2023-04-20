@@ -45,7 +45,7 @@ public class OrderController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public TotalOrdersResponse getAllByPagination(@RequestParam(required = false, defaultValue = "2") Integer page,
+    public TotalOrdersResponse getAllByPagination(@RequestParam(required = false, defaultValue = "1") Integer page,
                                                   @RequestParam(required = false, defaultValue = "50") Integer size,
                                                   @RequestParam(required = false, defaultValue = "desc")
                                                       @Pattern(regexp = "^(asc|desc)$", message = "orderBy must be asc or desc")
@@ -56,6 +56,7 @@ public class OrderController {
     {
         PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
         Page<Order> orders = orderService.getOrdersByPage(pageRequest);
+
         List<OrderResponse> orderResponses = getOrderResponses(orders.stream());
         OrderTotalResponse orderTotalResponse = OrderTotalResponse.buildBy(orderResponses, sortBy, orderBy);
         PageResponse pageResponse = OrderDtoMapper.MAPPER.toPageResponse(orders);
