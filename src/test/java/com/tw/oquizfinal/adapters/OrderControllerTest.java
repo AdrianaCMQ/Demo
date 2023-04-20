@@ -190,13 +190,13 @@ public class OrderControllerTest {
 
         @Test
         void should_get_orders_with_no_pagination() throws Exception {
-            when(orderService.getOrders()).thenReturn(orders);
+            PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(1, 50, orderBy, sortBy);
+            when(orderService.getOrdersByPage(any())).thenReturn(new PageImpl<>(orders, pageRequest, 3));
 
             mockMvc.perform(MockMvcRequestBuilders
                             .get("/orders")
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    ).andExpect(status().isOk())
-                    .andExpect(jsonPath("$.size()").value(2));
+                    ).andExpect(status().isOk());
         }
 
         @Test

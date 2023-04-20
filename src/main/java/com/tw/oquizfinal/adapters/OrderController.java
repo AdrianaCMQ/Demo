@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,19 +45,15 @@ public class OrderController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public TotalOrdersResponse getAllByPagination(@RequestParam(required = false) Integer page,
-                                                  @RequestParam(required = false) Integer size,
-                                                  @RequestParam(required = false, defaultValue = "desc") String orderBy,
-                                                  @RequestParam(required = false, defaultValue = "createdAt") String sortBy)
+    public TotalOrdersResponse getAllByPagination(@RequestParam(required = false, defaultValue = "2") Integer page,
+                                                  @RequestParam(required = false, defaultValue = "50") Integer size,
+                                                  @RequestParam(required = false, defaultValue = "desc")
+                                                      @Pattern(regexp = "^(asc|desc)$", message = "orderBy must be asc or desc")
+                                                      String orderBy,
+                                                  @RequestParam(required = false, defaultValue = "createdAt")
+                                                      @Pattern(regexp = "^(createdAt|mobile)$", message = "orderBy must be createdAt or mobile")
+                                                      String sortBy)
     {
-        if (page == null || size == null) {
-            List<Order> orders = orderService.getOrders();
-            List<OrderResponse> orderResponses = getOrderResponses(orders.stream());
-            OrderTotalResponse orderTotalResponse = OrderTotalResponse.buildBy(orderResponses);
-            PageResponse pageResponse = new PageResponse(1, 1, 1);
-
-            return new TotalOrdersResponse(pageResponse, orderTotalResponse);
-        }
         PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
         Page<Order> orders = orderService.getOrdersByPage(pageRequest);
         List<OrderResponse> orderResponses = getOrderResponses(orders.stream());
