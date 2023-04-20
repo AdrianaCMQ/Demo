@@ -9,15 +9,11 @@ pipeline {
       }
     }
 
-    stage('Build') {
+    stage('Build and genImage') {
       steps {
         sh '${DOCKER_COMPOSE_PATH}/docker-compose up build'
-      }
-    }
-
-    stage('GenImage') {
-      steps {
         sh '${DOCKER_COMPOSE_PATH}/docker-compose build image'
+
       }
     }
 
