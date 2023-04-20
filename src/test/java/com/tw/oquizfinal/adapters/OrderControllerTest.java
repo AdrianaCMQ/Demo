@@ -176,17 +176,6 @@ public class OrderControllerTest {
         String orderBy = "desc";
         PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
 
-        @Test
-        void should_get_empty_when_has_no_order_or_pagination() throws Exception {
-
-            when(orderService.getOrders()).thenReturn(Collections.emptyList());
-
-            mockMvc.perform(MockMvcRequestBuilders
-                            .get("/orders")
-                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    ).andExpect(status().isOk())
-                    .andExpect(jsonPath("$.size()").value(2));
-        }
 
         @Test
         void should_get_orders_with_no_pagination() throws Exception {

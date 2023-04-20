@@ -143,17 +143,6 @@ public class OrderServiceTest {
         String orderBy = "desc";
         PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
 
-
-        @Test
-        void should_get_empty_list_when_has_no_order() {
-            when(orderRepository.findAll()).thenReturn(Collections.emptyList());
-
-            List<Order> orders = orderService.getOrders();
-
-            assertNotNull(orders);
-            assertEquals(orders.size(), 0);
-        }
-
         @Test
         void should_get_empty_page_when_has_no_order() {
             when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(Collections.emptyList(), pageRequest, 0));
@@ -182,23 +171,10 @@ public class OrderServiceTest {
         }
 
         @Test
-        void should_return_3_orders_with_no_pagination() {
-            when(orderRepository.findAll()).thenReturn(orders);
-
-            List<Order> orderList = orderService.getOrders();
-
-            assertNotNull(orderList);
-            Assertions.assertEquals(orderList.size(), 3);
-            Assertions.assertEquals(orderList.get(0).getOrderId(), orderList.get(0).getOrderId());
-            Assertions.assertEquals(orderList.get(1).getOrderId(), orderList.get(1).getOrderId());
-            Assertions.assertEquals(orderList.get(2).getOrderId(), orderList.get(2).getOrderId());
-        }
-
-        @Test
         void should_return_orders_with_order_items_info() {
-            when(orderRepository.findAll()).thenReturn(orders);
+            when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(orders, pageRequest, 3));
 
-            List<Order> orderList = orderService.getOrders();
+            List<Order> orderList = orderService.getOrdersByPage(pageRequest).getContent();
 
             assertNotNull(orderList);
             Assertions.assertEquals(orderList.size(), 3);
