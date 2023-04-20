@@ -146,6 +146,7 @@ public class OrderServiceTest {
         @Test
         void should_get_empty_page_when_has_no_order() {
             when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(Collections.emptyList(), pageRequest, 0));
+            when(client.getProductDetail(1L)).thenReturn(Optional.of(product));
 
             Page<Order> orderList = orderService.getOrdersByPage(pageRequest);
 
@@ -159,6 +160,7 @@ public class OrderServiceTest {
         @Test
         void should_return_2_pages_when_has_three_data_and_page_size_is_2() {
             when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(orders, pageRequest, 3));
+            when(client.getProductDetail(1L)).thenReturn(Optional.of(product));
 
             Page<Order> orderPage = orderService.getOrdersByPage(pageRequest);
 
@@ -171,8 +173,9 @@ public class OrderServiceTest {
         }
 
         @Test
-        void should_return_orders_with_order_items_info() {
+        void should_return_orders_with_order_items_and_product_info() {
             when(orderRepository.findAllByPage(pageRequest)).thenReturn(new PageImpl<>(orders, pageRequest, 3));
+            when(client.getProductDetail(1L)).thenReturn(Optional.of(product));
 
             List<Order> orderList = orderService.getOrdersByPage(pageRequest).getContent();
 
@@ -181,6 +184,9 @@ public class OrderServiceTest {
             Assertions.assertEquals(orderList.get(0).getItems(), orderList.get(0).getItems());
             Assertions.assertEquals(orderList.get(1).getItems(), orderList.get(1).getItems());
             Assertions.assertEquals(orderList.get(2).getItems(), orderList.get(2).getItems());
+            Assertions.assertEquals(orderList.get(0).getOrderItemWithProducts(), orderList.get(0).getOrderItemWithProducts());
+            Assertions.assertEquals(orderList.get(1).getOrderItemWithProducts(), orderList.get(1).getOrderItemWithProducts());
+            Assertions.assertEquals(orderList.get(2).getOrderItemWithProducts(), orderList.get(2).getOrderItemWithProducts());
         }
     }
 }

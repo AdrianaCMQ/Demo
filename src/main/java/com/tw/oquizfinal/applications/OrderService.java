@@ -48,6 +48,8 @@ public class OrderService {
 
     @Transactional
     public Page<Order> getOrdersByPage(PageRequest pageRequest) {
-        return orderRepository.findAllByPage(pageRequest);
+        Page<Order> orderPage = orderRepository.findAllByPage(pageRequest);
+        orderPage.stream().forEach(order -> order.setOrderItemWithProducts(getProductInfo(order)));
+        return orderPage;
     }
 }
