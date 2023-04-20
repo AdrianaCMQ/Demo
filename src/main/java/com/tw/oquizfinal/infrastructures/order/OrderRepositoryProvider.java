@@ -26,11 +26,6 @@ public class OrderRepositoryProvider implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAll() {
-        return OrderEntityMapper.MAPPER.toModel(jpaOrderRepository.findAll());
-    }
-
-    @Override
     public Page<Order> findAllByPage(Pageable pageable) {
         Page<OrderEntity> orderEntities = jpaOrderRepository.findAll(pageable);
         List<Order> orderList = OrderEntityMapper.MAPPER.toModel(orderEntities);

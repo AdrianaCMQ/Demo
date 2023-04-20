@@ -77,20 +77,6 @@ public class OrderRepositoryProviderTest {
         @Sql("classpath:scripts/insert_3_orders.sql")
         @Sql("classpath:scripts/insert_5_items.sql")
         @Sql("classpath:scripts/insert_5_orders_items.sql")
-        void should_get_all_orders() {
-            List<Order> orders = orderRepositoryProvider.findAll();
-
-            assertNotNull(orders);
-            assertEquals(orders.size(), 3);
-            assertEquals(orders.get(0).getOrderId(), 1L);
-            assertEquals(orders.get(1).getOrderId(), 2L);
-            assertEquals(orders.get(2).getOrderId(), 3L);
-        }
-
-        @Test
-        @Sql("classpath:scripts/insert_3_orders.sql")
-        @Sql("classpath:scripts/insert_5_items.sql")
-        @Sql("classpath:scripts/insert_5_orders_items.sql")
         void should_get_all_orders_by_page() {
             PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(1, 2, "desc", "createdAt");
 
