@@ -1,9 +1,8 @@
 package com.tw.oquizfinal.adapters;
 
-import com.tw.oquizfinal.adapters.dto.OrderItemWithProduct;
 import com.tw.oquizfinal.adapters.dto.request.OrderRequest;
-import com.tw.oquizfinal.adapters.dto.responses.OrderTotalResponse;
 import com.tw.oquizfinal.adapters.dto.responses.OrderResponse;
+import com.tw.oquizfinal.adapters.dto.responses.OrderTotalResponse;
 import com.tw.oquizfinal.adapters.dto.responses.PageResponse;
 import com.tw.oquizfinal.adapters.dto.responses.TotalOrdersResponse;
 import com.tw.oquizfinal.adapters.mapper.OrderDtoMapper;
@@ -39,9 +38,8 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createOrder(@RequestBody @Valid OrderRequest orderRequest){
         Order order = orderService.save(OrderDtoMapper.MAPPER.toModel(orderRequest, Instant.now()));
-        List<OrderItemWithProduct> itemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
 
-        return OrderDtoMapper.MAPPER.toResponse(order, itemsWithProduct);
+        return OrderDtoMapper.MAPPER.toResponse(order);
     }
 
     @GetMapping
@@ -71,9 +69,6 @@ public class OrderController {
     @NotNull
     private List<OrderResponse> getOrderResponses(Stream<Order> orders) {
 
-        return orders.map(order -> {
-            List<OrderItemWithProduct> orderItemsWithProduct = orderService.getOrderItemsWithProduct(order.getItems());
-            return OrderDtoMapper.MAPPER.toResponse(order, orderItemsWithProduct);
-        }).collect(Collectors.toList());
+        return orders.map(OrderDtoMapper.MAPPER::toResponse).collect(Collectors.toList());
     }
 }

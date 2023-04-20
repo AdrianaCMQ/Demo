@@ -5,7 +5,6 @@ import com.tw.oquizfinal.applications.coupon.DiscountCalculator;
 import com.tw.oquizfinal.applications.exceptions.ProductNotExistException;
 import com.tw.oquizfinal.domain.order.Order;
 import com.tw.oquizfinal.domain.order.OrderRepository;
-import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import com.tw.oquizfinal.domain.product.Product;
 import com.tw.oquizfinal.domain.product.ProductServiceClient;
 import lombok.AllArgsConstructor;
@@ -27,12 +26,8 @@ public class OrderService {
     @Transactional
     public Order save(Order order) {
         order.setTotalPrice(discountCalculator.getTotalPrice(order));
-
-        return orderRepository.save(order);
-    }
-
-    public List<OrderItemWithProduct> getOrderItemsWithProduct(List<OrderItem> items) {
-        return items.stream().map(orderItem -> {
+        Order save = orderRepository.save(order);
+        List<OrderItemWithProduct> orderItemWithProducts = save.getItems().stream().map(orderItem -> {
             Product product = client.getProductDetail(orderItem.getProductId())
                     .orElseThrow(() -> new ProductNotExistException(orderItem.getProductId()));
 
@@ -41,6 +36,9 @@ public class OrderService {
                     product.getTitle(), product.getPrice(),
                     product.getCategory(), orderItem.getQuantity());
         }).collect(Collectors.toList());
+        save.setOrderItemWithProducts(orderItemWithProducts);
+
+        return save;
     }
 
     @Transactional

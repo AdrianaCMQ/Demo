@@ -22,5 +22,5 @@ public class OrderResponse {
     private Long orderId;
     private BigDecimal totalPrice;
     private Long couponId;
-    private List<OrderItemWithProduct> orderItems;
+    private List<OrderItemWithProduct> orderItemWithProducts;
 }

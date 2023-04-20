@@ -87,12 +87,15 @@ public class OrderServiceTest {
         orderItemWithProduct.setPrice(PRICE);
         orderItemWithProduct.setCategory(CATEGORY);
         orderItemWithProduct.setQuantity(QUANTITY);
+
+        order.setOrderItemWithProducts(List.of(orderItemWithProduct));
     }
 
     @Test
     void should_return_order_when_save_it() {
         when(discountCalculator.getTotalPrice(order)).thenReturn(PRICE);
         when(orderRepository.save(order)).thenReturn(order);
+        when(client.getProductDetail(1L)).thenReturn(Optional.of(product));
 
         Order savedOrder = orderService.save(order);
 
@@ -102,24 +105,26 @@ public class OrderServiceTest {
         assertEquals(order.getMobile(), savedOrder.getMobile());
         assertEquals(order.getTotalPrice(), savedOrder.getTotalPrice());
         assertEquals(order.getCreatedAt(), savedOrder.getCreatedAt());
-        assertEquals(List.of(orderItem), savedOrder.getItems());
+        assertEquals(order.getItems(), savedOrder.getItems());
+        assertEquals(order.getOrderItemWithProducts(), savedOrder.getOrderItemWithProducts());
     }
 
     @Test
     void should_return_items_with_product_info() {
+        when(discountCalculator.getTotalPrice(order)).thenReturn(PRICE);
+        when(orderRepository.save(order)).thenReturn(order);
         when(client.getProductDetail(1L)).thenReturn(Optional.of(product));
 
-        List<OrderItemWithProduct> orderItemsWithProduct = orderService.getOrderItemsWithProduct(List.of(orderItem));
+        Order savedOrder = orderService.save(order);
 
-        assertEquals(1, orderItemsWithProduct.size());
-        assertEquals(orderItem.getItemId(), orderItemsWithProduct.get(0).getItemId());
-        assertEquals(orderItem.getProductId(), orderItemsWithProduct.get(0).getProductId());
-        assertEquals(orderItem.getQuantity(), orderItemsWithProduct.get(0).getQuantity());
-        assertEquals(product.getTitle(), orderItemsWithProduct.get(0).getTitle());
-        assertEquals(product.getPrice(), orderItemsWithProduct.get(0).getPrice());
-        assertEquals(product.getCategory(), orderItemsWithProduct.get(0).getCategory());
+        assertEquals(1, savedOrder.getOrderItemWithProducts().size());
+        assertEquals(orderItem.getItemId(), savedOrder.getOrderItemWithProducts().get(0).getItemId());
+        assertEquals(orderItem.getProductId(), savedOrder.getOrderItemWithProducts().get(0).getProductId());
+        assertEquals(orderItem.getQuantity(), savedOrder.getOrderItemWithProducts().get(0).getQuantity());
+        assertEquals(product.getTitle(), savedOrder.getOrderItemWithProducts().get(0).getTitle());
+        assertEquals(product.getPrice(), savedOrder.getOrderItemWithProducts().get(0).getPrice());
+        assertEquals(product.getCategory(), savedOrder.getOrderItemWithProducts().get(0).getCategory());
     }
-
     @Nested
     class getOrders {
 

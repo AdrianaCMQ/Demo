@@ -66,7 +66,7 @@ class OrderDtoMapperTest {
         orderResponse.setMobile(MOBILE);
         orderResponse.setCouponId(1L);
         orderResponse.setTotalPrice(PRICE);
-        orderResponse.setOrderItems(List.of(orderItemWithProduct));
+        orderResponse.setOrderItemWithProducts(List.of(orderItemWithProduct));
     }
 
     @Test
@@ -87,7 +87,8 @@ class OrderDtoMapperTest {
     void should_mapper_order_and_items_to_order_response() {
         order.setOrderId(1L);
         order.setTotalPrice(PRICE);
-        OrderResponse response = OrderDtoMapper.MAPPER.toResponse(order, List.of(orderItemWithProduct));
+        order.setOrderItemWithProducts(List.of(orderItemWithProduct));
+        OrderResponse response = OrderDtoMapper.MAPPER.toResponse(order);
 
         assertEquals(response.getOrderId(), orderResponse.getOrderId());
         assertEquals(response.getAddressee(), orderResponse.getAddressee());
@@ -95,7 +96,7 @@ class OrderDtoMapperTest {
         assertEquals(response.getMobile(), orderResponse.getMobile());
         assertEquals(response.getTotalPrice(), orderResponse.getTotalPrice());
         assertEquals(response.getCouponId(), orderResponse.getCouponId());
-        assertEquals(response.getOrderItems().size(), orderResponse.getOrderItems().size());
+        assertEquals(response.getOrderItemWithProducts().size(), orderResponse.getOrderItemWithProducts().size());
     }
 
     @Test

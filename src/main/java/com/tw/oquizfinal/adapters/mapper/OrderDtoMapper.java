@@ -1,6 +1,5 @@
 package com.tw.oquizfinal.adapters.mapper;
 
-import com.tw.oquizfinal.adapters.dto.OrderItemWithProduct;
 import com.tw.oquizfinal.adapters.dto.request.OrderRequest;
 import com.tw.oquizfinal.adapters.dto.responses.OrderResponse;
 import com.tw.oquizfinal.adapters.dto.responses.PageResponse;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
-import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OrderDtoMapper {
@@ -26,8 +24,7 @@ public interface OrderDtoMapper {
     @Mapping(target = "items", source = "orderRequest.items")
     Order toModel(OrderRequest orderRequest, Instant createdAt);
 
-    @Mapping(target = "orderItems", source = "itemWithProductList")
-    OrderResponse toResponse(Order order, List<OrderItemWithProduct> itemWithProductList);
+    OrderResponse toResponse(Order order);
 
     default PageRequest buildPageRequest(Integer page, Integer size, String orderBy, String sortBy) {
         Sort.Direction direction = "desc".equals(orderBy) ? Sort.Direction.DESC : Sort.Direction.ASC;

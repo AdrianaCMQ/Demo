@@ -91,7 +91,6 @@ public class OrderControllerTest {
         void should_return_success_when_save_order() throws Exception {
             OrderRequest orderRequest = new OrderRequest(TEST_ADDRESSEE, TEST_ADDRESS, MOBILE, 1L, List.of(orderItem));
             when(orderService.save(any())).thenReturn(order);
-            when(orderService.getOrderItemsWithProduct(List.of(orderItem))).thenReturn(List.of(orderItemWithProduct));
 
             mockMvc.perform(MockMvcRequestBuilders
                             .post("/orders")
@@ -221,7 +220,6 @@ public class OrderControllerTest {
         @Test
         void should_get_two_pages_in_desc_when_has_three_data() throws Exception {
             when(orderService.getOrdersByPage(any())).thenReturn(new PageImpl<>(orders, pageRequest, 3));
-            when(orderService.getOrderItemsWithProduct(List.of(orderItem))).thenReturn(List.of(orderItemWithProduct));
 
             mockMvc.perform(MockMvcRequestBuilders
                             .get("/orders?page=1&size=2&sortBy=createdAt&orderBy=desc")

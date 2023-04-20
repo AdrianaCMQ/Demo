@@ -1,5 +1,6 @@
 package com.tw.oquizfinal.domain.order;
 
+import com.tw.oquizfinal.adapters.dto.OrderItemWithProduct;
 import com.tw.oquizfinal.domain.orderItem.OrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +26,5 @@ public class Order {
     private Long couponId;
     private Instant createdAt;
     private List<OrderItem> items;
+    private List<OrderItemWithProduct> orderItemWithProducts;
 }
