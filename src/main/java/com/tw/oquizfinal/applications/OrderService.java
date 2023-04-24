@@ -40,9 +40,12 @@ public class OrderService {
                     .orElseThrow(() -> new ProductNotExistException(orderItem.getProductId()));
 
             return new OrderItemWithProduct(
-                    orderItem.getItemId(), orderItem.getProductId(),
-                    product.getTitle(), product.getPrice(),
-                    product.getCategory(), orderItem.getQuantity());
+                    orderItem.getItemId(),
+                    orderItem.getProductId(),
+                    product.getTitle(),
+                    product.getPrice(),
+                    product.getCategory(),
+                    orderItem.getQuantity());
         }).collect(Collectors.toList());
     }
 

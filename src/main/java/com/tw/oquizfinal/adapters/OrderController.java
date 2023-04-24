@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,13 +46,14 @@ public class OrderController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Validated
     public TotalOrdersResponse getAllByPagination(@RequestParam(required = false, defaultValue = "1") Integer page,
                                                   @RequestParam(required = false, defaultValue = "50") Integer size,
                                                   @RequestParam(required = false, defaultValue = "desc")
                                                       @Pattern(regexp = "^(asc|desc)$", message = "orderBy must be asc or desc")
                                                       String orderBy,
                                                   @RequestParam(required = false, defaultValue = "createdAt")
-                                                      @Pattern(regexp = "^(createdAt|mobile)$", message = "orderBy must be createdAt or mobile")
+                                                      @Pattern(regexp = "^(createdAt|mobile)$", message = "sortBy must be createdAt or mobile")
                                                       String sortBy)
     {
         PageRequest pageRequest = OrderDtoMapper.MAPPER.buildPageRequest(page, size, orderBy, sortBy);
