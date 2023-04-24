@@ -19,13 +19,17 @@ pipeline {
 
     stage('Push image to ECR') {
         steps {
-            sh 'docker plugin install amazon-ecr:latest'
-            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: '160071257600', secretKeyVariable: 'XFDFF6QNSXtgSpK68fo2slUxmAuTLLKu50kHNTEr']]) {
-                               sh 'aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 160071257600.dkr.ecr.<region>.amazonaws.com'
-                           }
-                           sh 'docker tag demo 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
-                           sh 'docker push 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
-        }
+          withEnv(['PATH+DOCKER=/opt/homebrew/bin']) {
+            script {
+              sh 'docker plugin install amazon-ecr:latest'
+            }
+          }
+          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: '160071257600', secretKeyVariable: 'XFDFF6QNSXtgSpK68fo2slUxmAuTLLKu50kHNTEr']]) {
+                                 sh 'aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 160071257600.dkr.ecr.<region>.amazonaws.com'
+                             }
+          sh 'docker tag demo 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
+          sh 'docker push 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
+       }
     }
 
     stage('start service locally') {
