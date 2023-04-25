@@ -19,7 +19,7 @@ pipeline {
 
     stage('Push image to ECR') {
         steps {
-         withEnv(["PATH+DOCKER=/opt/homebrew/bin", "AWS_ACCESS_KEY_ID=$(env.AWS_ACCESS_KEY_ID)", "AWS_SECRET_ACCESS_KEY=$(env.AWS_SECRET_ACCESS_KEY)", "AWS_DEFAULT_REGION=$(env.AWS_DEFAULT_REGION)"]) {
+         withEnv(["PATH+DOCKER=/opt/homebrew/bin", "AWS_ACCESS_KEY_ID=ASIASKRH5RYAMY66ECVX", "AWS_SECRET_ACCESS_KEY=w8g5Dd165DpepGtW1tsFksRGP8Idw2GA+qT1K1ji", "AWS_DEFAULT_REGION=eu-central-1"]) {
           sh 'aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 160071257600.dkr.ecr.eu-central-1.amazonaws.com'
           sh 'docker tag demo 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
           sh 'docker push 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
