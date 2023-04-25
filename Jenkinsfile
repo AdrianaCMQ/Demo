@@ -27,6 +27,7 @@ pipeline {
           sh 'docker tag demo 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
           sh 'docker push 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
          }
+       }
     }
 
     stage('start service locally') {
