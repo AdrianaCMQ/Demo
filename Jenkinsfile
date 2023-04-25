@@ -23,6 +23,7 @@ pipeline {
           sh 'aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 160071257600.dkr.ecr.eu-central-1.amazonaws.com'
           sh 'docker tag demo 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
           sh 'docker push 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
+         }
        }
     }
 
