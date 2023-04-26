@@ -23,9 +23,9 @@ pipeline {
           sh 'env'
         }
          withEnv(['PATH+DOCKER=/opt/homebrew/bin']) {
-          sh 'export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}'
-          sh 'export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}'
-          sh 'export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}'
+          sh 'export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"'
+          sh 'export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"'
+          sh 'export AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN}"'
           sh 'aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 160071257600.dkr.ecr.eu-central-1.amazonaws.com'
           sh 'docker tag demo 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
           sh 'docker push 160071257600.dkr.ecr.eu-central-1.amazonaws.com/demo'
