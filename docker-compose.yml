@@ -56,7 +56,7 @@ services:
       gradle build --exclude-task test --no-daemon
 
   image:
-    image: quiz-final
+    image: demo
     build:
       context: .
       dockerfile: Dockerfile
